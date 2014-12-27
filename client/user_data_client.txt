@@ -1,0 +1,17 @@
+yum -y install docker conntrack-tools
+service docker start
+wget -O /usr/bin/weave https://raw.githubusercontent.com/zettio/weave/master/weave
+chmod a+x /usr/bin/weave
+weave launch
+C=$(weave run $IP/24 -p 5900:5900 -p 61992:61992 -ti akyshr/ubuntu-lxde-tigervnc)
+docker exec $C apt-get -y update
+docker exec $C apt-get -y install jmeter netcat-traditional
+docker exec $C bash -c "echo >>/etc/apt/sources.list deb http://cz.archive.ubuntu.com/ubuntu utopic main universe"
+docker exec $C apt-get -y update
+docker exec $C apt-get -y install jmeter
+docker exec $C bash -c "echo  >/etc/hosts 127.0.0.1 localhost"
+docker exec $C bash -c "echo >>/etc/hosts $IP \`hostname\`"
+docker exec $C bash -c "echo >>/home/ubuntu/.xsessionrc \"/usr/bin/vncconfig &\""
+# password is terraform
+docker exec $C usermod -p '$6$FgogUAwsZ9$rTOWyfVb0z522VsiHQoFplPneikv7x4ZgcoUWlu51r0fH9ZPdpj1a6gHIBJ6e2qh.oyR0dMmA5zSSOeXqf2DF0' ubuntu
+docker exec -d $C bash -c "export COUNT=1; while true; do { nc.traditional -l -p 61992 -c 'echo \$COUNT'; sed -i s/^remote_hosts.*/remote_hosts=\`seq -f '10.0.1.%g' -s , 1 \$COUNT\`/ /usr/share/jmeter/bin/jmeter.properties; COUNT=\$((COUNT+1)); sleep 0.1; } ;done"
