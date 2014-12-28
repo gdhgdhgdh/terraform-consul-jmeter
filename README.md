@@ -32,8 +32,8 @@ is to be 'CloudFormation for everybody else' if that helps.
 ### Consul
 
 A key-value store also from Hashicorp - we're using their public demo instance at http://demo.consul.io/ -
-please be aware that its contents get reset hourly so I recommend you run the
-first `terraform apply` just after the hour.
+please be aware that its contents get reset half-hourly so I recommend you run the
+first `terraform apply` just after the hour or half-hour.
 
 ## Technical implementation
 
@@ -63,7 +63,7 @@ so they contain your AWS access and secret keys - we will be creating and destro
 instances, VPCs, and security groups, so at least the IAM 'Power User' template
 is desirable. Also include the IP address from which you will launch any SSH or VNC access
 to the launched instances. (It's usually https://www.google.co.uk/?gws_rd=ssl#q=ip with a /32 suffix)
-1. Wait until one minute past the hour since the public Consul demo site is reset every hour.
+1. Wait until one minute past the (half) hour since the public Consul demo site is regularly reset.
 1. `cd client`
 1. `terraform plan` to see what Terraform will do. This is an awesome feature
 just by itself since Amazon's own [CloudFormation] tool has no such facility.
