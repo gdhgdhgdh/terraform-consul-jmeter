@@ -1,0 +1,13 @@
+yum -y install docker conntrack-tools
+service docker start
+wget -O /usr/bin/weave https://raw.githubusercontent.com/zettio/weave/master/weave
+chmod a+x /usr/bin/weave
+weave launch $MASTERIP
+export BOB=1; while [ $BOB == 1 ] ; do COUT=$(nc -w 10 $MASTERIP 61992); BOB=$?; sleep 1; done; 
+IP=10.0.1.$COUT
+
+C=$(weave run $IP/24 -ti java)
+docker exec $C apt-get -y install jmeter
+docker exec $C bash -c "echo  >/etc/hosts 127.0.0.1 localhost"
+docker exec $C bash -c "echo >>/etc/hosts $IP \`hostname\`"
+docker exec -d $C /usr/bin/jmeter-server -D server.rmi.localport=55100
